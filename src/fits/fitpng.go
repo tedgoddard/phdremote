@@ -66,13 +66,13 @@ double* fit2png(char *fileName, int* width, int* height, int* len)  {
                if (fits_read_pix(fptr, TDOUBLE, fpixel, naxes[0], NULL,
                     pixels, NULL, &status) )  {
                     if (status) fits_report_error(stderr, status);
-                    printf("    at %d %d\n", fpixel[0], naxes[0]);
+                    printf("    at %ld %ld\n", fpixel[0], naxes[0]);
                 }
 
                 if (fits_read_pix(fptr, TDOUBLE, fpixel, naxes[0], NULL,
                     &pixelss[*width * (naxes[1] - fpixel[1])], NULL, &status) ) {
                     if (status) fits_report_error(stderr, status);
-                    printf("    at %d %d\n", fpixel[0], naxes[0]);
+                    printf("    at %ld %ld\n", fpixel[0], naxes[0]);
                 }
 
             }

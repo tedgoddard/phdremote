@@ -84,18 +84,21 @@ func main() {
     wsHandler := websocket.Handler(EchoServer)
 	http.Handle("/echo/", wsHandler)
 
+    var phdWrite *bufio.Writer
     conn, err := net.Dial("tcp", "localhost:4400")
-    if err == nil {
+    if (err == nil) {
+        phdWrite = bufio.NewWriter(conn)
         go GuideWatch (&conn)
     } else {
         log.Print("Unable to connect to PHD")
     }
 
     http.HandleFunc("/phdremote/cam.png", func(w http.ResponseWriter, r *http.Request) {
-log.Print("returning image")
-        connWrite := bufio.NewWriter(conn)
-        fmt.Fprintf(connWrite, "{\"method\":\"save_image\",\"id\":123}\n")
-        connWrite.Flush()
+log.Print("returning png image")
+        if (nil != phdWrite)  {
+            fmt.Fprintf(phdWrite, "{\"method\":\"save_image\",\"id\":123}\n")
+            phdWrite.Flush()
+        }
         w.Header().Set("Content-Type", "image/png")
         fits.Convert(currentImagePath, w)
     })

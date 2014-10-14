@@ -31,10 +31,14 @@ func main() {
                 "        camImg.src = 'cam.png?' + new Date().getTime();" +
                 "    };" +
                 "};" +
+                "function imageClick(event) {" +
+                "   console.log('click' + event.x + ' ' + event.y);" +
+                "   ws.send(JSON.stringify({method: 'set_lock_position', params: [event.x, event.y], id: 42}));" +
+                "};" +
                 "</script>" +
             "</head>" +
             "<body>" +
-            "<img id='cam' src='cam.png'>" +
+            "<img id='cam' src='cam.png' onclick='imageClick(event)'>" +
             "</body>" +
         "</html>"
 
@@ -44,6 +48,7 @@ func main() {
 
     //only one websocket allowed for now
     var wsConn *websocket.Conn
+    var phdWrite *bufio.Writer
     phdDone := make(chan bool)
 
     GuideWatch := func (conn *net.Conn)  {
@@ -57,8 +62,13 @@ func main() {
             err = json.Unmarshal([]byte(status), &phdMessage)
             if (nil == err)  {
                 if (nil != phdMessage["jsonrpc"]) {
-                    rpcResult := phdMessage["result"].(map[string]interface{})
-                    currentImagePath = rpcResult["filename"].(string)
+                    log.Print("jsonrpc contents", status)
+                    switch result := phdMessage["result"].(type)  {
+                        case map[string]interface{}:
+                            currentImagePath = result["filename"].(string)
+                        case float64:
+                            log.Print("float64 jsonrpc result")
+                    }
                 }
                 fmt.Println(phdMessage["jsonrpc"])
             }
@@ -71,9 +81,24 @@ func main() {
         phdDone <- true
     }
 
+    SocketWatch := func()  {
+        var err error
+        for (err == nil)  {
+            var msg = make([]byte, 512)
+            var n int
+            n, err = wsConn.Read(msg)
+            fmt.Printf("WEBSOCKET Received: %s.\n", msg[:n])
+            if (nil != phdWrite)  {
+                fmt.Fprintf(phdWrite, string(msg))
+                phdWrite.Flush()
+            }
+        }
+    }
+
     EchoServer := func(newConn *websocket.Conn) {
         log.Print("EchoServer started")
         wsConn = newConn
+        go SocketWatch ()
         echoDone := <-phdDone
         if (echoDone)  {
             log.Print("EchoServer done")
@@ -84,7 +109,6 @@ func main() {
     wsHandler := websocket.Handler(EchoServer)
 	http.Handle("/echo/", wsHandler)
 
-    var phdWrite *bufio.Writer
     conn, err := net.Dial("tcp", "localhost:4400")
     if (err == nil) {
         phdWrite = bufio.NewWriter(conn)

@@ -32,13 +32,20 @@ func main() {
                 "    };" +
                 "};" +
                 "function imageClick(event) {" +
-                "   console.log('click' + event.x + ' ' + event.y);" +
-                "   ws.send(JSON.stringify({method: 'set_lock_position', params: [event.x, event.y], id: 42}));" +
+                "    console.log('click' + event.x + ' ' + event.y);" +
+                "    ws.send(JSON.stringify({method: 'set_lock_position'," +
+                "        params: [event.x, event.y], id: 42}));" +
+                "};" +
+                "function guide() {" +
+                "    console.log('guide');" +
+                "    ws.send(JSON.stringify({method:'guide'," +
+                "        params:[{pixels:1.5, time:8, timeout:40}, false], id:1}));" +
                 "};" +
                 "</script>" +
             "</head>" +
             "<body>" +
-            "<img id='cam' src='cam.png' onclick='imageClick(event)'>" +
+            "<img id='cam' src='cam.png' onclick='imageClick(event)' style='transform: scaleY(-1)'>" +
+            "<button style='position:fixed;bottom:0;left:0' onclick='guide()'>GUIDE</button>" +
             "</body>" +
         "</html>"
 

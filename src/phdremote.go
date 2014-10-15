@@ -6,6 +6,7 @@ package main
 
 import "fmt"
 import "net"
+import "os"
 import "bufio"
 import "net/http"
 import "websocket"
@@ -16,7 +17,8 @@ import "encoding/json"
 func main() {
 	fmt.Println("Starting server")
 
-    currentImagePath := "RCA.fit"
+    previousImagePath := ""
+    currentImagePath := ""
 
     wsClientHTML :=
         "<html>" +
@@ -72,7 +74,11 @@ func main() {
                     log.Print("jsonrpc contents", status)
                     switch result := phdMessage["result"].(type)  {
                         case map[string]interface{}:
+                            previousImagePath = currentImagePath
                             currentImagePath = result["filename"].(string)
+                            if ("" != previousImagePath)  {
+                                os.Remove(previousImagePath)
+                            }
                         case float64:
                             log.Print("float64 jsonrpc result")
                     }
@@ -131,7 +137,11 @@ log.Print("returning png image")
             phdWrite.Flush()
         }
         w.Header().Set("Content-Type", "image/png")
-        fits.Convert(currentImagePath, w)
+        momentaryImagePath := currentImagePath
+        if ("" == momentaryImagePath)  {
+            momentaryImagePath = "RCA.fit"
+        }
+        fits.Convert(momentaryImagePath, w)
     })
 
     log.Print("http.ListenAndServe")

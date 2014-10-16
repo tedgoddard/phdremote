@@ -33,10 +33,31 @@ func main() {
                 "        camImg.src = 'cam.png?' + new Date().getTime();" +
                 "    };" +
                 "};" +
+    
+                "function getClickPosition(e) {" +
+                "    var parentPosition = getPosition(e.currentTarget);" +
+                "    return {" +
+                "        x: e.clientX - parentPosition.x," +
+                "        y: e.clientY - parentPosition.y" +
+                "    }" +
+                "}" +
+                "function getPosition(element) {" +
+                "    var x = 0;" +
+                "    var y = 0;" +
+                "    while (element) {" +
+                "        x += (element.offsetLeft - element.scrollLeft +" +
+                "            element.clientLeft);" +
+                "        y += (element.offsetTop - element.scrollTop +" +
+                "            element.clientTop);" +
+                "        element = element.offsetParent;" +
+                "    }" +
+                "    return { x: x, y: y };" +
+                "}" +
+
                 "function imageClick(event) {" +
-                "    console.log('click' + event.x + ' ' + event.y);" +
+                "    var imgClick = getClickPosition(event);" +
                 "    ws.send(JSON.stringify({method: 'set_lock_position'," +
-                "        params: [event.x, event.y], id: 42}));" +
+                "        params: [imgClick.x, imgClick.y], id: 42}));" +
                 "};" +
                 "function guide() {" +
                 "    console.log('guide');" +

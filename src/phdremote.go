@@ -58,6 +58,10 @@ func main() {
                 "    var imgClick = getClickPosition(event);" +
                 "    ws.send(JSON.stringify({method: 'set_lock_position'," +
                 "        params: [imgClick.x, imgClick.y], id: 42}));" +
+                "    var marker = document.getElementById('marker');"+
+                "    marker.style.top = imgClick.y - 10;" +
+                "    marker.style.left = imgClick.x - 10;" +
+                "    marker.firstElementChild.style['stroke-dasharray'] = '2 2';" +
                 "};" +
                 "function guide() {" +
                 "    console.log('guide');" +
@@ -67,8 +71,14 @@ func main() {
                 "</script>" +
             "</head>" +
             "<body>" +
-            "<img id='cam' src='cam.png' onclick='imageClick(event)' style='transform: scaleY(-1)'>" +
+            "<div style='position: relative; left: 0; top: 0;'>" +
+                "<img id='cam' src='cam.png' onclick='imageClick(event)' style='transform: scaleY(-1);-webkit-filter:brightness(140%)contrast(300%);position: relative; top: 0; left: 0;'>" +
+                "<svg id='marker' width='20' height='20' style='position: absolute; top: 0; left: 0;'>" +
+                "    <rect x='0' y='0' width='20' height='20' stroke='green' stroke-width='4' fill='none' />" +
+                "</svg>" +
+            "</div>" +
             "<button style='position:fixed;bottom:0;left:0' onclick='guide()'>GUIDE</button>" +
+
             "</body>" +
         "</html>"
 

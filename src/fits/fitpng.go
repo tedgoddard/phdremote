@@ -12,6 +12,7 @@ import "math"
 import "image"
 import "image/color"
 import "image/png"
+import "image/jpeg"
 import "encoding/binary"
 import "unsafe"
 
@@ -115,8 +116,7 @@ func (gray64 GrayFloat64) At(x, y int) color.Color  {
     return grayValue
 }
 
-func Convert(fileName string, imageWriter io.Writer)  {
-
+func getGray(fileName string) GrayFloat64  {
     var widthC C.int
     var heightC C.int
     var lenC C.int
@@ -151,8 +151,23 @@ func Convert(fileName string, imageWriter io.Writer)  {
     }
 
     C.free(unsafe.Pointer(greyCBytes))
+    
+    return greyImage
+}
+
+func ConvertPNG(fileName string, imageWriter io.Writer)  {
+    greyImage := getGray(fileName)
 
     bufWriter := bufio.NewWriter(imageWriter)
     png.Encode(bufWriter, greyImage)
+    bufWriter.Flush()
+}
+
+
+func ConvertJPG(fileName string, imageWriter io.Writer)  {
+    greyImage := getGray(fileName)
+
+    bufWriter := bufio.NewWriter(imageWriter)
+    jpeg.Encode(bufWriter, greyImage, nil)
     bufWriter.Flush()
 }

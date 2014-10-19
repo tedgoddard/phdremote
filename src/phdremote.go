@@ -30,7 +30,7 @@ func main() {
                 "    console.log(msgJSON.Event);" +
                 "    if ('LoopingExposures' == msgJSON.Event)  {" +
                 "        var camImg = document.getElementById('cam');" +
-                "        camImg.src = 'cam.png?' + new Date().getTime();" +
+                "        camImg.src = 'cam.jpg?' + new Date().getTime();" +
                 "    };" +
                 "};" +
     
@@ -72,7 +72,7 @@ func main() {
             "</head>" +
             "<body>" +
             "<div style='position: relative; left: 0; top: 0;'>" +
-                "<img id='cam' src='cam.png' onclick='imageClick(event)' style='transform: scaleY(-1);-webkit-filter:brightness(140%)contrast(300%);position: relative; top: 0; left: 0;'>" +
+                "<img id='cam' src='cam.jpg' onclick='imageClick(event)' style='transform: scaleY(-1);-webkit-filter:brightness(140%)contrast(300%);position: relative; top: 0; left: 0;'>" +
                 "<svg id='marker' width='20' height='20' style='position: absolute; top: 0; left: 0;'>" +
                 "    <rect x='0' y='0' width='20' height='20' stroke='green' stroke-width='4' fill='none' />" +
                 "</svg>" +
@@ -172,7 +172,21 @@ log.Print("returning png image")
         if ("" == momentaryImagePath)  {
             momentaryImagePath = "RCA.fit"
         }
-        fits.Convert(momentaryImagePath, w)
+        fits.ConvertPNG(momentaryImagePath, w)
+    })
+
+    http.HandleFunc("/phdremote/cam.jpg", func(w http.ResponseWriter, r *http.Request) {
+log.Print("returning jpg image")
+        if (nil != phdWrite)  {
+            fmt.Fprintf(phdWrite, "{\"method\":\"save_image\",\"id\":123}\n")
+            phdWrite.Flush()
+        }
+        w.Header().Set("Content-Type", "image/jpeg")
+        momentaryImagePath := currentImagePath
+        if ("" == momentaryImagePath)  {
+            momentaryImagePath = "RCA.fit"
+        }
+        fits.ConvertJPG(momentaryImagePath, w)
     })
 
     log.Print("http.ListenAndServe")

@@ -28,9 +28,17 @@ func main() {
                 "ws.onmessage = function(msg) {console.log(msg.data);" +
                 "    var msgJSON = JSON.parse(msg.data);" +
                 "    console.log(msgJSON.Event);" +
+                "    var marker = document.getElementById('marker');"+
                 "    if ('LoopingExposures' == msgJSON.Event)  {" +
                 "        var camImg = document.getElementById('cam');" +
                 "        camImg.src = 'cam.jpg?' + new Date().getTime();" +
+                "    };" +
+                "    if ('StartCalibration' == msgJSON.Event)  {" +
+                "       marker.firstElementChild.stroke = 'yellow';" +
+                "    };" +
+                "    if ('GuideStep' == msgJSON.Event)  {" +
+                "       marker.firstElementChild.stroke = 'green';" +
+                "       marker.firstElementChild.style['stroke-dasharray'] = nil;" +
                 "    };" +
                 "};" +
     

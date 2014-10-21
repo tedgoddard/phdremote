@@ -34,11 +34,11 @@ func main() {
                 "        camImg.src = 'cam.jpg?' + new Date().getTime();" +
                 "    };" +
                 "    if ('StartCalibration' == msgJSON.Event)  {" +
-                "       marker.firstElementChild.stroke = 'yellow';" +
+                "       marker.firstElementChild.setAttribute('stroke', 'yellow');" +
                 "    };" +
                 "    if ('GuideStep' == msgJSON.Event)  {" +
-                "       marker.firstElementChild.stroke = 'green';" +
-                "       marker.firstElementChild.style['stroke-dasharray'] = nil;" +
+                "       marker.firstElementChild.setAttribute('stroke', 'green');" +
+                "       marker.firstElementChild.style['stroke-dasharray'] = null;" +
                 "    };" +
                 "};" +
     

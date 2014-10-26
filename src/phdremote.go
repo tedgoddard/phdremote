@@ -52,7 +52,7 @@ func main() {
                 "function clearMarkers() {" +
                 "    var marker = document.getElementById('marker');"+
                 "    for (i = 0; i < marker.childNodes.length; i++)  {" +
-                "       marker.chilNodes[i].style['opacity'] = 0;" +
+                "       marker.childNodes[i].style['opacity'] = 0;" +
                 "    }" +
                 "}" +
                 "function getClickPosition(e) {" +

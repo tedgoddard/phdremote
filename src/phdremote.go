@@ -34,14 +34,26 @@ func main() {
                 "        camImg.src = 'cam.jpg?' + new Date().getTime();" +
                 "    };" +
                 "    if ('StartCalibration' == msgJSON.Event)  {" +
-                "       marker.firstElementChild.setAttribute('stroke', 'yellow');" +
+                "       showMarker('calib');" +
                 "    };" +
                 "    if ('GuideStep' == msgJSON.Event)  {" +
-                "       marker.firstElementChild.setAttribute('stroke', 'green');" +
-                "       marker.firstElementChild.style['stroke-dasharray'] = null;" +
+                "       showMarker('guide');" +
+                "    };" +
+                "    if ('StarLost' == msgJSON.Event)  {" +
+                "       showMarker('lost');" +
                 "    };" +
                 "};" +
     
+                "function showMarker(name) {" +
+                "    clearMarkers();" +
+                "    document.getElementById('m-' + name).style['opacity'] = 1.0;" +
+                "}" +
+                "function clearMarkers() {" +
+                "    var marker = document.getElementById('marker');"+
+                "    for (i = 0; i < marker.children.length; i++)  {" +
+                "       marker.children[i].style['opacity'] = 0;" +
+                "    }" +
+                "}" +
                 "function getClickPosition(e) {" +
                 "    var parentPosition = getPosition(e.currentTarget);" +
                 "    return {" +
@@ -69,7 +81,7 @@ func main() {
                 "    var marker = document.getElementById('marker');"+
                 "    marker.style.top = imgClick.y - 10;" +
                 "    marker.style.left = imgClick.x - 10;" +
-                "    marker.firstElementChild.style['stroke-dasharray'] = '2 2';" +
+                "    showMarker('select');" +
                 "};" +
                 "function guide() {" +
                 "    console.log('guide');" +
@@ -82,7 +94,25 @@ func main() {
             "<div style='position: relative; left: 0; top: 0;'>" +
                 "<img id='cam' src='cam.jpg' onclick='imageClick(event)' style='transform: scaleY(-1);-webkit-filter:brightness(140%)contrast(300%);position: relative; top: 0; left: 0;'>" +
                 "<svg id='marker' width='20' height='20' style='position: absolute; top: 0; left: 0;'>" +
-                "    <rect x='0' y='0' width='20' height='20' stroke='green' stroke-width='4' fill='none' />" +
+                "    <g id='m-select' style='opacity:0'>" +
+                "        <rect x='-4' y='-4' width='10' height='10' stroke='white' stroke-width='2' fill='none' />" +
+                "        <rect x='14' y='-4' width='10' height='10' stroke='white' stroke-width='2' fill='none' />" +
+                "        <rect x='-4' y='14' width='10' height='10' stroke='white' stroke-width='2' fill='none' />" +
+                "        <rect x='14' y='14' width='10' height='10' stroke='white' stroke-width='2' fill='none' />" +
+                "    </g>" +
+                "    <g id='m-calib' style='opacity:0'>" +
+                "        <rect x='0' y='0' width='20' height='20' stroke='yellow' stroke-width='4' stroke-dasharray='2 2' fill='none' />" +
+                "    </g>" +
+                "    <g id='m-guide' style='opacity:0'>" +
+                "        <line x1='10' y1='0' x2='10' y2='20' stroke='green' stroke-width='2' />" +
+                "        <line x1='0' y1='10' x2='20' y2='10' stroke='green' stroke-width='2' />" +
+                "        <rect x='4' y='4' width='12' height='12' stroke='green' stroke-width='2' fill='none' />" +
+                "    </g>" +
+                "    <g id='m-lost'  style='opacity:0'>" +
+                "        <line x1='0' y1='0' x2='20' y2='20' stroke='red' stroke-width='2' />" +
+                "        <line x1='20' y1='0' x2='0' y2='20' stroke='red' stroke-width='2' />" +
+                "        <rect x='0' y='0' width='20' height='20' stroke='red' stroke-width='4' fill='none' />" +
+                "    </g>" +
                 "</svg>" +
             "</div>" +
             "<button style='position:fixed;bottom:0;left:0' onclick='guide()'>GUIDE</button>" +

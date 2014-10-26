@@ -7,6 +7,7 @@ package main
 import "fmt"
 import "net"
 import "os"
+import "strings"
 import "bufio"
 import "net/http"
 import "websocket"
@@ -138,6 +139,11 @@ func main() {
             log.Print(status)
             var phdMessage map[string]interface{}
             err = json.Unmarshal([]byte(status), &phdMessage)
+            if (nil != err)  {
+                log.Print("jsonrpc ERROR, applying remove backslash hack ", err)
+                status = strings.Replace(status, "\\", "\\\\", -1)
+                err = json.Unmarshal([]byte(status), &phdMessage)
+            }
             if (nil == err)  {
                 if (nil != phdMessage["jsonrpc"]) {
                     log.Print("jsonrpc contents", status)

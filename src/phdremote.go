@@ -31,13 +31,13 @@ func main() {
                 "    console.log(msgJSON.Event);" +
                 "    var marker = document.getElementById('marker');"+
                 "    if ('LoopingExposures' == msgJSON.Event)  {" +
-                "        var camImg = document.getElementById('cam');" +
-                "        camImg.src = 'cam.jpg?' + new Date().getTime();" +
+                "        updateCam();" +
                 "    };" +
                 "    if ('StartCalibration' == msgJSON.Event)  {" +
                 "       showMarker('calib');" +
                 "    };" +
                 "    if ('GuideStep' == msgJSON.Event)  {" +
+                "       updateCam();" +
                 "       showMarker('guide');" +
                 "    };" +
                 "    if ('StarLost' == msgJSON.Event)  {" +
@@ -45,6 +45,10 @@ func main() {
                 "    };" +
                 "};" +
     
+                "function updateCam() {" +
+                "    var camImg = document.getElementById('cam');" +
+                "    camImg.src = 'cam.jpg?' + new Date().getTime();" +
+                "}" +
                 "function showMarker(name) {" +
                 "    clearMarkers();" +
                 "    document.getElementById('m-' + name).style['opacity'] = 1.0;" +
@@ -52,6 +56,7 @@ func main() {
                 "function clearMarkers() {" +
                 "    var marker = document.getElementById('marker');"+
                 "    for (i = 0; i < marker.childNodes.length; i++)  {" +
+                "       if (!marker.childNodes[i].style) { continue; };" +
                 "       marker.childNodes[i].style['opacity'] = 0;" +
                 "    }" +
                 "}" +

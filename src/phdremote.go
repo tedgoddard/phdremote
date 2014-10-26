@@ -51,8 +51,8 @@ func main() {
                 "}" +
                 "function clearMarkers() {" +
                 "    var marker = document.getElementById('marker');"+
-                "    for (i = 0; i < marker.children.length; i++)  {" +
-                "       marker.children[i].style['opacity'] = 0;" +
+                "    for (i = 0; i < marker.childNodes.length; i++)  {" +
+                "       marker.chilNodes[i].style['opacity'] = 0;" +
                 "    }" +
                 "}" +
                 "function getClickPosition(e) {" +

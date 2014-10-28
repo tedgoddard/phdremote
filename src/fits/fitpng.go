@@ -83,7 +83,10 @@ double* fit2png(char *fileName, int* width, int* height, int* len)  {
         fits_close_file(fptr, &status);
     } 
 
-    if (status) fits_report_error(stderr, status); // print any error message
+    if (status) {
+        fits_report_error(stderr, status); // print any error message
+        return NULL;
+    }
 
     return(pixelss);
 }

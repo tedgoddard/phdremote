@@ -24,6 +24,16 @@ func main() {
     wsClientHTML :=
         "<html>" +
             "<head>" +
+                "<style>" +
+                "  .controls {" +
+                "    position:fixed;"+
+                "    bottom:0;left:0;"+
+                "    left:0;"+
+                "  }" +
+                "  .controls button {" +
+                "    height:40px;"+
+                "  }" +
+                "</style>" +
                 "<script>" +
                 "var ws = new WebSocket('ws://' + location.host + '/echo/');" +
                 "ws.onmessage = function(msg) {console.log(msg.data);" +
@@ -94,6 +104,14 @@ func main() {
                 "    ws.send(JSON.stringify({method:'guide'," +
                 "        params:[{pixels:1.5, time:8, timeout:40}, false], id:1}));" +
                 "};" +
+                "function stop() {" +
+                "    console.log('stop');" +
+                "    ws.send(JSON.stringify({'method':'set_paused','params':[true,'full'],'id':2}));" +
+                "};" +
+                "function loop() {" +
+                "    console.log('loop');" +
+                "    ws.send(JSON.stringify({method:'loop', id:3}));" +
+                "};" +
                 "</script>" +
             "</head>" +
             "<body>" +
@@ -121,7 +139,11 @@ func main() {
                 "    </g>" +
                 "</svg>" +
             "</div>" +
-            "<button style='position:fixed;bottom:0;left:0' onclick='guide()'>GUIDE</button>" +
+            "<div class='controls' style='position:fixed;bottom:0;left:0'>" +
+            "    <button onclick='guide()'>GUIDE</button>" +
+            "    <button onclick='stop()'>STOP</button>" +
+            "    <button onclick='loop()'>LOOP</button>" +
+            "</div>" +
 
             "</body>" +
         "</html>"

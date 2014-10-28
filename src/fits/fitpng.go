@@ -111,7 +111,7 @@ func (gray64 GrayFloat64) Bounds() image.Rectangle  {
 }
 
 func (gray64 GrayFloat64) At(x, y int) color.Color  {
-    offset := (y - gray64.Rect.Min.Y) * gray64.Stride +
+    offset := (gray64.Rect.Max.Y  - 1 - (y - gray64.Rect.Min.Y)) * gray64.Stride +
         (x - gray64.Rect.Min.X)
     pixelFloat := gray64.Pix[offset]
     grayValue := color.Gray16{

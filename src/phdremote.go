@@ -116,7 +116,7 @@ func main() {
             "</head>" +
             "<body>" +
             "<div style='position: relative; left: 0; top: 0;'>" +
-                "<img id='cam' src='cam.jpg' onclick='imageClick(event)' style='transform: scaleY(-1);-webkit-filter:brightness(140%)contrast(300%);position: relative; top: 0; left: 0;'>" +
+                "<img id='cam' src='cam.jpg' onclick='imageClick(event)' style='-webkit-filter:brightness(140%)contrast(300%);position: relative; top: 0; left: 0;'>" +
                 "<svg id='marker' width='20' height='20' style='position: absolute; top: 0; left: 0;'>" +
                 "    <g id='m-select' style='opacity:0'>" +
                 "        <rect x='-4' y='-4' width='10' height='10' stroke='white' stroke-width='2' fill='none' />" +

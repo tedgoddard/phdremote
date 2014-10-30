@@ -18,7 +18,7 @@ import "unsafe"
 
 
 /*
-#cgo LDFLAGS: -lcfitsio
+#cgo LDFLAGS: -lcfitsio -lm
 
 #include <stdio.h>
 #include <stdlib.h>

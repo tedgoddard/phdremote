@@ -25,13 +25,23 @@ func main() {
         "<html>" +
             "<head>" +
                 "<style>" +
-                "  .controls {" +
+                "  .bcontrols {" +
                 "    position:fixed;"+
-                "    bottom:0;left:0;"+
-                "    left:0;"+
+                "    bottom:0;"+
+                "    left:50%%;"+
                 "  }" +
-                "  .controls button {" +
+                "  .rcontrols {" +
+                "    position:fixed;"+
+                "    top:50%%;"+
+                "    right:0;"+
+                "  }" +
+                "  .bcontrols button {" +
                 "    height:40px;"+
+                "  }" +
+                "  .rcontrols button {" +
+                "    display:block;"+
+                "    height:40px;"+
+                "    margin:4px;"+
                 "  }" +
                 "</style>" +
                 "<script>" +
@@ -112,6 +122,10 @@ func main() {
                 "    console.log('loop');" +
                 "    ws.send(JSON.stringify({method:'loop', id:3}));" +
                 "};" +
+                "function expose(t) {" +
+                "    console.log('expose' + t);" +
+                "    ws.send(JSON.stringify({method:'set_exposure', params:[t], id:4}));" +
+                "};" +
                 "</script>" +
             "</head>" +
             "<body>" +
@@ -139,10 +153,15 @@ func main() {
                 "    </g>" +
                 "</svg>" +
             "</div>" +
-            "<div class='controls' style='position:fixed;bottom:0;left:0'>" +
+            "<div class='bcontrols' >" +
             "    <button onclick='guide()'>GUIDE</button>" +
             "    <button onclick='stop()'>STOP</button>" +
             "    <button onclick='loop()'>LOOP</button>" +
+            "</div>" +
+            "<div class='rcontrols' >" +
+            "    <button onclick='expose(500)'>0.5s</button>" +
+            "    <button onclick='expose(1000)'>1.0s</button>" +
+            "    <button onclick='expose(2000)'>2.0s</button>" +
             "</div>" +
 
             "</body>" +

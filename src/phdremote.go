@@ -30,10 +30,16 @@ func main() {
                 "    bottom:0;"+
                 "    left:50%%;"+
                 "  }" +
+                "  .bcinner {" +
+                "    margin-left:-50%%;"+
+                "  }" +
                 "  .rcontrols {" +
                 "    position:fixed;"+
                 "    top:50%%;"+
                 "    right:0;"+
+                "  }" +
+                "  .rcinner {" +
+                "    margin-top:-50%%;"+
                 "  }" +
                 "  .bcontrols button {" +
                 "    height:40px;"+
@@ -154,14 +160,18 @@ func main() {
                 "</svg>" +
             "</div>" +
             "<div class='bcontrols' >" +
+            "  <div class='bcinner' >" +
             "    <button onclick='guide()'>GUIDE</button>" +
             "    <button onclick='stop()'>STOP</button>" +
             "    <button onclick='loop()'>LOOP</button>" +
+            "  </div>" +
             "</div>" +
             "<div class='rcontrols' >" +
+            "  <div class='rcinner' >" +
             "    <button onclick='expose(500)'>0.5s</button>" +
             "    <button onclick='expose(1000)'>1.0s</button>" +
             "    <button onclick='expose(2000)'>2.0s</button>" +
+            "  </div>" +
             "</div>" +
 
             "</body>" +

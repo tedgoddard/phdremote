@@ -84,6 +84,7 @@ double* fit2png(char *fileName, int* width, int* height, int* len)  {
     } 
 
     if (status) {
+        printf("Error processing FITS file\n");
         fits_report_error(stderr, status); // print any error message
         return NULL;
     }

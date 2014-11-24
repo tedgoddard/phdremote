@@ -36,6 +36,19 @@ func main() {
             left: 0;
             top: 0;
           }
+          .brcontrols {
+            position:fixed;
+            bottom:10px;
+            right:10px;
+          }
+          .brcontrols a {
+            display:block;
+            padding:10px;
+            margin:10px;
+            font-size:20px;
+            border-radius:8px;
+            background:red;
+          }
           @media (max-width: 640px) {
               .bcontrols {
                 position:fixed;
@@ -185,11 +198,34 @@ func main() {
             console.log("expose" + t);
             ws.send(JSON.stringify({method:"set_exposure", params:[t], id:4}));
         };
+        function toggleBullseye() {
+            var bullseyeElement = document.getElementById("bull");
+            bullseyeElement.style["opacity"] = 1.0 - bullseyeElement.style["opacity"];
+        }
+        function adjustSizes() {
+            var bullseyeElement = document.getElementById("bull");
+            var camElement = document.getElementById("cam");
+            bullseyeElement.style.width = camElement.width;
+            bullseyeElement.style.height = camElement.height;
+        }
+        window.onresize = function(event)  {
+            adjustSizes();
+        }
         </script>
     </head>
     <body>
     <div class="imgBox">
-        <img id="cam" src="cam.jpg" onclick="imageClick(event)" style="-webkit-filter:brightness(140%)contrast(300%);position: relative; top: 0; left: 0;">
+        <img id="cam" src="cam.jpg" onclick="imageClick(event)" onload="adjustSizes()"
+            style="-webkit-filter:brightness(140%%)contrast(300%%);position: relative; top: 0; left: 0;">
+        <svg id="bull" width="100%%" height="100%%" style="opacity:0; position: absolute; top: 0; left: 0;">
+            <g >
+                <line x1="0px" y1="50%%" x2="100%%" y2="50%%" stroke="red" stroke-width="1" />
+                <line x1="50%%" y1="0px" x2="50%%" y2="100%%" stroke="red" stroke-width="1" />
+                <circle cx="50%%" cy="50%%" r="10%%" stroke="red" stroke-width="1" fill="none" />
+                <circle cx="50%%" cy="50%%" r="4%%" stroke="red" stroke-width="1" fill="none" />
+                <circle cx="50%%" cy="50%%" r="2%%" stroke="red" stroke-width="1" fill="none" />
+            </g>
+        </svg>
         <svg id="marker" width="20" height="20" style="position: absolute; top: 0; left: 0;">
             <g id="m-select" style="opacity:0">
                 <rect x="-4" y="-4" width="10" height="10" stroke="white" stroke-width="2" fill="none" />
@@ -224,6 +260,11 @@ func main() {
         <a onclick="guide()">GUIDE</a>
         <a onclick="stop()">STOP</a>
         <a onclick="loop()">LOOP</a>
+      </div>
+    </div>
+    <div class="brcontrols" >
+      <div class="brinner" >
+        <a onclick="toggleBullseye()">B</a>
       </div>
     </div>
     </body>

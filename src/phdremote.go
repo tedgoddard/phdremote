@@ -264,7 +264,16 @@ func main() {
     </div>
     <div class="brcontrols" >
       <div class="brinner" >
-        <a onclick="toggleBullseye()">B</a>
+        <a onclick="toggleBullseye()">
+            <svg width="40px" height="40px">
+            <g >
+                <line x1="0px" y1="50%%" x2="100%%" y2="50%%" stroke="black" stroke-width="1" />
+                <line x1="50%%" y1="0px" x2="50%%" y2="100%%" stroke="black" stroke-width="1" />
+                <circle cx="50%%" cy="50%%" r="20%%" stroke="black" stroke-width="1" fill="none" />
+                <circle cx="50%%" cy="50%%" r="10%%" stroke="black" stroke-width="1" fill="none" />
+            </g>
+
+            </svg></a>
       </div>
     </div>
     </body>

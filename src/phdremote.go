@@ -80,6 +80,11 @@ func main() {
                 border-radius:8px;
                 background:red;
               }
+              .brcontrols {
+                position:fixed;
+                bottom:100px;
+                right:10px;
+              }
           }
           @media (min-width: 641px) {
               .bcontrols {

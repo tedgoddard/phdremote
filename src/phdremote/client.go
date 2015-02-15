@@ -186,11 +186,26 @@ package phdremote
             var bullseyeElement = document.getElementById("bull");
             bullseyeElement.style["opacity"] = 1.0 - bullseyeElement.style["opacity"];
         }
+        function toggleSolved() {
+            var solvedElement = document.getElementById("solvedfield");
+            var newOpacity = 1.0 - solvedElement.style["opacity"];
+            if (newOpacity > 0) {
+                solvedElement.src = "solved.jpg?" + new Date().getTime();
+                solvedElement.onload = function() {
+                    solvedElement.style["opacity"] = newOpacity;
+               }
+            } else {
+                solvedElement.style["opacity"] = newOpacity;
+            }
+        }
         function adjustSizes() {
             var bullseyeElement = document.getElementById("bull");
             var camElement = document.getElementById("cam");
             bullseyeElement.style.width = camElement.width;
             bullseyeElement.style.height = camElement.height;
+            var solvedElement = document.getElementById("solvedfield");
+            solvedElement.style.width = camElement.width;
+            solvedElement.style.height = camElement.height;
         }
         window.onresize = function(event)  {
             adjustSizes();
@@ -201,6 +216,9 @@ package phdremote
     <div class="imgBox">
         <img id="cam" src="cam.jpg" onclick="imageClick(event)" onload="adjustSizes()"
             style="-webkit-filter:brightness(140%%)contrast(300%%);position: relative; top: 0; left: 0;">
+        <img id="solvedfield" onload="adjustSizes()"
+            onerror="this.style.display='none';"
+            style="position: absolute; top: 0; left: 0;">
         <svg id="bull" width="100%%" height="100%%" style="opacity:0; position: absolute; top: 0; left: 0;">
             <g >
                 <line x1="0px" y1="50%%" x2="100%%" y2="50%%" stroke="red" stroke-width="1" />
@@ -248,6 +266,19 @@ package phdremote
     </div>
     <div class="brcontrols" >
       <div class="brinner" >
+        <a onclick="toggleSolved()">
+            <svg width="40px" height="40px">
+            <g >
+                <line x1="60%%" y1="30%%" x2="20%%" y2="60%%" stroke="black" stroke-width="1" />
+                <line x1="20%%" y1="60%%" x2="80%%" y2="80%%" stroke="black" stroke-width="1" />
+                <line x1="80%%" y1="80%%" x2="60%%" y2="30%%" stroke="black" stroke-width="1" />
+                <circle cx="60%%" cy="30%%" r="8%%" stroke="black" stroke-width="1" fill="firebrick" />
+                <circle cx="20%%" cy="60%%" r="8%%" stroke="black" stroke-width="1" fill="firebrick" />
+                <circle cx="80%%" cy="80%%" r="8%%" stroke="black" stroke-width="1" fill="firebrick" />
+            </g>
+
+            </svg>
+        </a>
         <a onclick="toggleBullseye()">
             <svg width="40px" height="40px">
             <g >
@@ -257,7 +288,8 @@ package phdremote
                 <circle cx="50%%" cy="50%%" r="10%%" stroke="black" stroke-width="1" fill="none" />
             </g>
 
-            </svg></a>
+            </svg>
+        </a>
       </div>
     </div>
     </body>

@@ -5,8 +5,13 @@
 package main
 
 import "fmt"
+import "flag"
 import "net"
+import "io/ioutil"
 import "os"
+import "os/signal"
+import "os/exec"
+import "path/filepath"
 import "strings"
 import "bufio"
 import "net/http"
@@ -18,9 +23,28 @@ import "encoding/json"
 
 func main() {
 	fmt.Println("Starting server")
+    var userScriptPath = flag.String("solver", "",
+            "path to solver script arguments inFile outFile")
+    flag.Parse()
+
+    tmpDir, err := ioutil.TempDir("", "phdremote")
+    if (nil != err)  {
+        log.Print("could not find temp directory ", err)
+    }
 
     previousImagePath := ""
     currentImagePath := ""
+
+    sigChan := make(chan os.Signal, 1)
+    signal.Notify(sigChan, os.Interrupt)
+    go func(){
+        for _ = range sigChan {
+            fmt.Println("killed, orphan ", currentImagePath)
+            os.Remove(currentImagePath)
+            os.Exit(0)
+        }
+    }()
+
 
     http.HandleFunc("/phdremote/", func(w http.ResponseWriter, r *http.Request) {
         fmt.Fprintf(w, phdremote.ClientHTML)
@@ -51,7 +75,10 @@ func main() {
                     switch result := phdMessage["result"].(type)  {
                         case map[string]interface{}:
                             previousImagePath = currentImagePath
-                            currentImagePath = result["filename"].(string)
+                            newImagePath := result["filename"].(string)
+                            _, name := filepath.Split(newImagePath)
+                            currentImagePath = filepath.Join(tmpDir, name)
+                            os.Rename(newImagePath, currentImagePath)
                             if ("" != previousImagePath)  {
                                 os.Remove(previousImagePath)
                             }
@@ -94,6 +121,19 @@ func main() {
        }
     }
 
+    UserScript := func(inPath string) string {
+        if (*userScriptPath == "") {
+            return ""
+        }
+        outPath := inPath + "sol.jpg"
+        cmd := exec.Command(*userScriptPath, inPath, outPath)
+        err := cmd.Run()
+        if err != nil {
+            log.Print("Unable to execute user script ", err)
+        }
+        return outPath
+    }
+
     log.Print("websocket.Handler")
     wsHandler := websocket.Handler(EchoServer)
 	http.Handle("/echo/", wsHandler)
@@ -132,6 +172,19 @@ log.Print("returning jpg image")
             momentaryImagePath = "RCA.fit"
         }
         fits.ConvertJPG(momentaryImagePath, w)
+    })
+
+    http.HandleFunc("/phdremote/solved.jpg", func(w http.ResponseWriter, r *http.Request) {
+log.Print("returning solved jpg image")
+        momentaryImagePath := currentImagePath
+log.Print("run script ", *userScriptPath, " on ", momentaryImagePath)
+        outPath := UserScript(momentaryImagePath)
+        if (outPath == "") {
+            http.NotFound(w, r)
+            return
+        }
+        w.Header().Set("Content-Type", "image/jpeg")
+        http.ServeFile(w, r, outPath)
     })
 
     log.Print("http.ListenAndServe")

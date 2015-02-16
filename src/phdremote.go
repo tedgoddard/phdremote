@@ -127,11 +127,13 @@ func main() {
         }
         outPath := inPath + "sol.jpg"
         cmd := exec.Command(*userScriptPath, inPath, outPath)
-        err := cmd.Run()
+        buf, err := cmd.CombinedOutput()
         if err != nil {
             log.Print("Unable to execute user script ", outPath, err)
+            log.Print(string(buf))
             return "error.jpg"
         }
+        log.Print(string(buf))
         return outPath
     }
 

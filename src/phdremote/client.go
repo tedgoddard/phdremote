@@ -20,7 +20,12 @@ package phdremote
             bottom:10px;
             right:10px;
           }
-          .brcontrols a {
+          .trcontrols {
+            position:fixed;
+            top:10px;
+            right:10px;
+          }
+          .brcontrols a, .trcontrols a {
             display:block;
             padding:10px;
             margin:10px;
@@ -62,6 +67,11 @@ package phdremote
               .brcontrols {
                 position:fixed;
                 bottom:100px;
+                right:10px;
+              }
+              .trcontrols {
+                position:fixed;
+                top:10px;
                 right:10px;
               }
           }
@@ -155,7 +165,29 @@ package phdremote
             }
             return { x: x, y: y };
         }
-
+        var startX = 0;
+        var startY = 0;
+        var newX = 0;
+        var newY = 0;
+        var camContrast = 3.0;
+        var camBrightness = 1.4;
+        var startContrast = 3.0;
+        var startBrightness = 1.4;
+        function adjustStart(event) {
+            startX = event.pageX;
+            startY = event.pageY;
+            startContrast = camContrast;
+            startBrightness = camBrightness;
+        }
+        function adjustImage(event) {
+            var deltaX = event.pageX - startX;
+            var deltaY = event.pageY - startY;
+            camContrast = startContrast + deltaX / 100.0;
+            camBrightness = startBrightness + deltaY / 100.0;
+            var camElement = document.getElementById("cam");
+            camElement.style.webkitFilter =
+                "brightness(" + camBrightness + ") contrast(" + camContrast + ")";
+        }
         function imageClick(event) {
             var imgClick = getClickPosition(event);
             ws.send(JSON.stringify({method: "set_lock_position",
@@ -264,6 +296,20 @@ package phdremote
         <a onclick="loop()">LOOP</a>
       </div>
     </div>
+    <div class="trcontrols" >
+      <div class="trinner" >
+        <a draggable="true"
+            ontouchstart="adjustStart(event)" ondragstart="adjustStart(event)"
+            ondrag="adjustImage(event)" ontouchmove="adjustImage(event)">
+          <svg width="60px" height="60px">
+            <g >
+                <path d="M30,10 L30,50 A20,20 0 0,1 30,10 z" fill="black" />
+                <path d="M30,50 L30,10 A20,20 0 0,1 30,50 z" fill="firebrick" />
+            </g>
+          </svg>
+        </a>
+      </div>
+    </div>
     <div class="brcontrols" >
       <div class="brinner" >
         <a onclick="toggleSolved()">
@@ -287,7 +333,6 @@ package phdremote
                 <circle cx="50%%" cy="50%%" r="20%%" stroke="black" stroke-width="1" fill="none" />
                 <circle cx="50%%" cy="50%%" r="10%%" stroke="black" stroke-width="1" fill="none" />
             </g>
-
             </svg>
         </a>
       </div>

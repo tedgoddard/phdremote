@@ -1,9 +1,11 @@
 #!/bin/zsh
+#plotfield inputfitsfile outputjpgfile
+
 ASTRO_ROOT=(=solve-field(:h:h)) 
 
 solve-field -O --downsample 2 --plot-scale 0.3 $1
 
-anytopnm $1  | plot-constellations -w ${1:r}.wcs  -o /tmp/$$.png -f 40 -i - -N -C -B -D -d $ASTRO_ROOT/data/hd.fits
+fitstopnm $1 | plot-constellations -w ${1:r}.wcs  -o /tmp/$$.png -f 40 -i - -N -C -B -D -d $ASTRO_ROOT/data/hd.fits
 
 pngtopnm /tmp/$$.png | pnmtojpeg >$2
 

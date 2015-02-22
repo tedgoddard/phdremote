@@ -220,11 +220,14 @@ package phdremote
         }
         function toggleSolved() {
             var solvedElement = document.getElementById("solvedfield");
+            var solvedSpinner = document.getElementById("solvedspinner");
             var newOpacity = 1.0 - solvedElement.style["opacity"];
             if (newOpacity > 0) {
+                solvedSpinner.beginElement();
                 solvedElement.src = "solved.jpg?" + new Date().getTime();
                 solvedElement.onload = function() {
                     solvedElement.style["opacity"] = newOpacity;
+                    solvedSpinner.endElement();
                }
             } else {
                 solvedElement.style["opacity"] = newOpacity;
@@ -315,6 +318,15 @@ package phdremote
         <a onclick="toggleSolved()">
             <svg width="40px" height="40px">
             <g >
+                <animateTransform id="solvedspinner"
+                    attributeName="transform"
+                    attributeType="XML"
+                    type="rotate"
+                    from="0 20 20"
+                    to="360 20 20"
+                    dur="10s"
+                    begin="indefinite"
+                    repeatCount="indefinite"/>
                 <line x1="60%%" y1="30%%" x2="20%%" y2="60%%" stroke="black" stroke-width="1" />
                 <line x1="20%%" y1="60%%" x2="80%%" y2="80%%" stroke="black" stroke-width="1" />
                 <line x1="80%%" y1="80%%" x2="60%%" y2="30%%" stroke="black" stroke-width="1" />

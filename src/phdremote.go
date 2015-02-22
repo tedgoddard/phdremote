@@ -80,7 +80,7 @@ func main() {
                             currentImagePath = filepath.Join(tmpDir, name)
                             os.Rename(newImagePath, currentImagePath)
                             if ("" != previousImagePath)  {
-                                os.Remove(previousImagePath)
+//                                os.Remove(previousImagePath)
                             }
                         case float64:
                             log.Print("float64 jsonrpc result")

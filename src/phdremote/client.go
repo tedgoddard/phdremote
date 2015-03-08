@@ -221,7 +221,7 @@ package phdremote
         function toggleSolved() {
             var solvedElement = document.getElementById("solvedfield");
             var solvedSpinner = document.getElementById("solvedspinner");
-            var newOpacity = 1.0 - solvedElement.style["opacity"];
+            var newOpacity = 0.5 - solvedElement.style["opacity"];
             if (newOpacity > 0) {
                 solvedSpinner.beginElement();
                 solvedElement.src = "solved.jpg?" + new Date().getTime();

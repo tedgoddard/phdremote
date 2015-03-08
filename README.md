@@ -1,7 +1,7 @@
 phdremote
 =========
 
-Remote control for OpenPHD Guiding 
+Remote control for OpenPHD Guiding. A plate solver script can be used to solve and display an overlay for the current image.
 
 
 Building
@@ -12,12 +12,15 @@ Building
   * Install OpenPHD http://openphdguiding.org (snapshot 1165 or later)
   
   * go build src/phdremote.go
+  
+  * Modify the zsh script plotfield according to your astrometry installation
+  
 
 Running
 =======
 
   * Start PHD and connect to your autoguider
-  * ./phdremote
+  * ./phdremote -solver plotfield
   * Connect to http://localhost:8080/phdremote/ or use the IP address for remote viewing
 
 Environment

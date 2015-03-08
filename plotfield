@@ -3,7 +3,21 @@
 
 ASTRO_ROOT=(=solve-field(:h:h)) 
 
-solve-field -O --downsample 2 --plot-scale 0.3 $1
+infofile=${1:h}/previous.wcsinfo
+fieldmin=0
+fieldmax=90
+fieldunits="degrees"
+if [[ -a $infofile ]]; then
+    fieldw=`fgrep fieldw $infofile | cut -d " " -f 2`
+    fieldh=`fgrep fieldh $infofile | cut -d " " -f 2`
+    fieldunits=`fgrep fieldunits $infofile | cut -d " " -f 2`
+    (( fieldmax = $fieldw > $fieldh ? $fieldw : $fieldh ))
+    (( fieldmin = $fieldw < $fieldh ? $fieldw : $fieldh ))
+fi
+
+solve-field -O -L $fieldmin -H $fieldmax --downsample 2 --plot-scale 0.3 $1
+
+wcsinfo ${1:r}.wcs >$infofile
 
 fitstopnm $1 | plot-constellations -w ${1:r}.wcs  -o /tmp/$$.png -f 40 -i - -N -C -B -D -d $ASTRO_ROOT/data/hd.fits
 

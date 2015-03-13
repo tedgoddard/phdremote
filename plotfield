@@ -7,15 +7,21 @@ infofile=${1:h}/previous.wcsinfo
 fieldmin=0
 fieldmax=90
 fieldunits="degrees"
-if [[ -a $infofile ]]; then
+if [[ -s $infofile ]]; then
     fieldw=`fgrep fieldw $infofile | cut -d " " -f 2`
     fieldh=`fgrep fieldh $infofile | cut -d " " -f 2`
     fieldunits=`fgrep fieldunits $infofile | cut -d " " -f 2`
     (( fieldmax = $fieldw > $fieldh ? $fieldw : $fieldh ))
     (( fieldmin = $fieldw < $fieldh ? $fieldw : $fieldh ))
+    veryrecent=( $infofile(.ms-10N) )
+    if [[ -n $veryrecent ]]; then
+        racenter=`fgrep ra_center_hms $infofile | cut -d " " -f 2`
+        deccenter=`fgrep dec_center_dms $infofile | cut -d " " -f 2`
+        radius="--ra $racenter --dec $deccenter --radius 1"
+    fi
 fi
 
-solve-field -O -L $fieldmin -H $fieldmax --downsample 2 --plot-scale 0.3 $1
+solve-field -O -L $fieldmin -H $fieldmax ${=radius} --downsample 2 --plot-scale 0.3 $1
 
 wcsinfo ${1:r}.wcs >$infofile
 

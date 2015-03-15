@@ -26,6 +26,10 @@ Running
   
   * Use Chrome on Windows 
  
+Translation Clone
+=============
+
+The translation clone feature helps to position dim objects in the field center. When the plate solving view is displayed, tap on the desired object, then tap on a visible star. The desired object will be highlighted with a large red circle and the position of the bright star that brings the desired object to the centre field will be highlighted with a dashed circle. Adjust the telescope position until the star is centered in the small circle.
 
 Environment
 ===========

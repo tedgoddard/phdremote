@@ -233,6 +233,53 @@ package phdremote
                 solvedElement.style["opacity"] = newOpacity;
             }
         }
+        function imageDispatch(event) {
+            var solvedElement = document.getElementById("solvedfield");
+            if (solvedElement.style["opacity"] > 0) {
+                solvedClick(event);
+            } else {
+                imageClick(event);
+            }
+        }
+        var solvedClickGal = true;
+        function solvedClick(event) {
+            var camElement = document.getElementById("cam");
+            var galIcon = document.getElementById("galIcon");
+            var starIcon = document.getElementById("starIcon");
+            var destIcon = document.getElementById("destIcon");
+            var theIcon = galIcon;
+
+            destIcon.style["opacity"] = 0.0;
+            if (!solvedClickGal) {
+                theIcon = starIcon;
+                destIcon.style["opacity"] = 1.0;
+            }
+
+            var pos = getClickPosition(event);
+            var iconSize = svgSize(theIcon);
+            var destIconSize = svgSize(destIcon);
+
+            theIcon.style.top = pos.y - (iconSize / 2);
+            theIcon.style.left = pos.x - (iconSize / 2);
+            theIcon.style["opacity"] = 1.0;
+            solvedClickGal = !solvedClickGal;
+
+            var totalExtra = svgSize(galIcon) / 2;
+            destIcon.style.top = svgTop(starIcon) +
+                    ((camElement.height / 2) - svgTop(galIcon)) - totalExtra;
+            destIcon.style.left = svgLeft(starIcon) -
+                    (svgLeft(galIcon) - (camElement.width / 2)) - totalExtra;
+
+        };
+        function svgTop(elm) {
+            return parseFloat(elm.style.top);
+        }
+        function svgLeft(elm) {
+            return parseFloat(elm.style.left);
+        }
+        function svgSize(elm) {
+            return parseFloat(elm.getAttribute("height"));
+        }
         function adjustSizes() {
             var bullseyeElement = document.getElementById("bull");
             var camElement = document.getElementById("cam");
@@ -248,10 +295,10 @@ package phdremote
         </script>
     </head>
     <body>
-    <div class="imgBox">
+    <div class="imgBox" onclick="imageDispatch(event)">
         <img id="cam" src="cam.jpg" onclick="imageClick(event)" onload="adjustSizes()"
             style="-webkit-filter:brightness(140%%)contrast(300%%);position: relative; top: 0; left: 0;">
-        <img id="solvedfield" onload="adjustSizes()"
+        <img id="solvedfield" onload="adjustSizes()" onclick="solvedClick(event)"
             onerror="this.style.display='none';"
             style="position: absolute; top: 0; left: 0;">
         <svg id="bull" width="100%%" height="100%%" style="opacity:0; position: absolute; top: 0; left: 0;">
@@ -262,6 +309,15 @@ package phdremote
                 <circle cx="50%%" cy="50%%" r="4%%" stroke="red" stroke-width="1" fill="none" />
                 <circle cx="50%%" cy="50%%" r="2%%" stroke="red" stroke-width="1" fill="none" />
             </g>
+        </svg>
+        <svg id="galIcon" width="40" height="40" style="opacity: 0; position: absolute; top: 0; left: 0;" >
+            <circle cx="50%%" cy="50%%" r="48%%" stroke="red" stroke-width="1.0" fill="none"/>
+        </svg>
+        <svg id="starIcon" width="10" height="10" style="opacity: 0; position: absolute; top: 0; left: 0;" >
+            <circle cx="50%%" cy="50%%" r="48%%" stroke="red" stroke-width="1.0" stroke-dasharray="2 2" fill="none"/>
+        </svg>
+        <svg id="destIcon" width="10" height="10" style="opacity: 0; position: absolute; top: 0; left: 0;">
+            <circle cx="50%%" cy="50%%" r="48%%" stroke="red" stroke-width="1.0" fill="none"/>
         </svg>
         <svg id="marker" width="20" height="20" style="position: absolute; top: 0; left: 0;">
             <g id="m-select" style="opacity:0">

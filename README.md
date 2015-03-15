@@ -15,6 +15,7 @@ Building
   
   * Modify the zsh script plotfield according to your astrometry installation
   
+  * To build on Windows: open MINGW32 window with gcc configured, export CPATH and LIBRARY_PATH to cfitsio distribution directory, export GOPATH to phdremote directory
 
 Running
 =======

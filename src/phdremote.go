@@ -25,6 +25,8 @@ func main() {
 	fmt.Println("Starting server")
     var userScriptPath = flag.String("solver", "",
             "path to solver script arguments inFile outFile")
+    var fakeImagePath = flag.String("fake", "",
+            "path to fake image for testing")
     flag.Parse()
 
     tmpDir, err := ioutil.TempDir("", "phdremote")
@@ -40,7 +42,7 @@ func main() {
     go func(){
         for _ = range sigChan {
             fmt.Println("killed, orphan ", currentImagePath)
-            os.Remove(currentImagePath)
+//            os.Remove(currentImagePath)
             os.Exit(0)
         }
     }()
@@ -75,12 +77,16 @@ func main() {
                     switch result := phdMessage["result"].(type)  {
                         case map[string]interface{}:
                             previousImagePath = currentImagePath
-                            newImagePath := result["filename"].(string)
-                            _, name := filepath.Split(newImagePath)
-                            currentImagePath = filepath.Join(tmpDir, name)
-                            os.Rename(newImagePath, currentImagePath)
-                            if ("" != previousImagePath)  {
-//                                os.Remove(previousImagePath)
+                            if (*fakeImagePath != "") {
+                                currentImagePath = *fakeImagePath
+                            } else {
+                                newImagePath := result["filename"].(string)
+                                _, name := filepath.Split(newImagePath)
+                                currentImagePath = filepath.Join(tmpDir, name)
+                                os.Rename(newImagePath, currentImagePath)
+                                if ("" != previousImagePath)  {
+    //                                os.Remove(previousImagePath)
+                                }
                             }
                         case float64:
                             log.Print("float64 jsonrpc result")
@@ -129,7 +135,7 @@ func main() {
         cmd := exec.Command(*userScriptPath, inPath, outPath)
         buf, err := cmd.CombinedOutput()
         if err != nil {
-            log.Print("Unable to execute user script ", outPath, err)
+            log.Print("Unable to execute user script ", outPath, " ", err)
             log.Print(string(buf))
             return "error.jpg"
         }
@@ -187,6 +193,15 @@ log.Print("run script ", *userScriptPath, " on ", momentaryImagePath)
             return
         }
         w.Header().Set("Content-Type", "image/jpeg")
+        http.ServeFile(w, r, outPath)
+    })
+
+    http.HandleFunc("/phdremote/solved.wcsinfo", func(w http.ResponseWriter, r *http.Request) {
+        momentaryImagePath := currentImagePath
+        outPath := filepath.Join(filepath.Dir(momentaryImagePath),
+                "previous.wcsinfo")
+        log.Print("returning solved wcs info for ", outPath)
+        w.Header().Set("Content-Type", "text/plain")
         http.ServeFile(w, r, outPath)
     })
 

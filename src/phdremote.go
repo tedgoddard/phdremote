@@ -205,6 +205,13 @@ log.Print("run script ", *userScriptPath, " on ", momentaryImagePath)
         http.ServeFile(w, r, outPath)
     })
 
+    http.HandleFunc("/phdremote/lookup", func(w http.ResponseWriter, r *http.Request) {
+        object := r.FormValue("o")
+        ra, dec := phdremote.LookupObject(object)
+        w.Header().Set("Content-Type", "application/json")
+        fmt.Fprintf(w, "{\"ra\":%s,\"dec\":%s}", ra, dec)
+    })
+
     log.Print("http.ListenAndServe")
     log.Fatal(http.ListenAndServe(":8080", nil))
 

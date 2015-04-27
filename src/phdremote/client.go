@@ -39,6 +39,11 @@ package phdremote
                 bottom:100px;
                 left:60px;
               }
+              .tcontrols {
+                position:fixed;
+                top:100px;
+                left:60px;
+              }
               .bcinner {
               }
               .rcontrols {
@@ -76,12 +81,20 @@ package phdremote
               }
           }
           @media (min-width: 641px) {
+              .tcontrols {
+                position:fixed;
+                top:20px;
+                left:50%%;
+              }
               .bcontrols {
                 position:fixed;
                 bottom:20px;
                 left:50%%;
               }
               .bcinner {
+                margin-left:-50%%;
+              }
+              .tcinner {
                 margin-left:-50%%;
               }
               .rcontrols {
@@ -111,6 +124,10 @@ package phdremote
           }
         </style>
         <script>
+        var currentInfo = { };
+        var currentTarget = "";
+        var targetRA = 0.0;
+        var targetDEC = 0.0;
         var ws = new WebSocket("ws://" + location.host + "/echo/");
         ws.onmessage = function(msg) {console.log(msg.data);
             var msgJSON = JSON.parse(msg.data);
@@ -228,10 +245,83 @@ package phdremote
                 solvedElement.onload = function() {
                     solvedElement.style["opacity"] = newOpacity;
                     solvedSpinner.endElement();
+                    getAndDisplayInfo();
                }
             } else {
                 solvedElement.style["opacity"] = newOpacity;
             }
+        }
+        function processInfo(data) {
+            var newInfo = data.split("\n");
+            for (index in newInfo) {
+                var entry = newInfo[index].split(" ");
+                currentInfo[entry[0]] = entry[1];
+            }
+            if (currentTarget) {
+                findField(currentTarget);
+            }
+        }
+        function getAndDisplayInfo() {
+            httpGet("solved.wcsinfo?" + new Date().getTime(), processInfo);
+        }
+        function testMarkers() {
+            displayMarker("Medusa", 112.48, 13.20694);
+            displayMarker("HD 61199", 114.5745875, 4.94234722);
+            displayMarker("HD 61112", 114.45529167, 4.53981389);
+            displayMarker("HD 60803", 114.1445625, 5.86169722);
+            displayMarker("HD 61696", 115.195175, 5.00018611);
+            displayMarker("Procyon", 115.028, 5.187222);
+            displayMarker("HD 61664", 115.17254583, 6.62442778);
+        }
+        function processLookup(data) {
+            console.log("lookup response " + data);
+            var coords = JSON.parse(data);
+            displayMarker("*", coords.ra, coords.dec);
+
+        }
+        function findField(targetText) {
+            targetText = targetText.toLowerCase();
+            currentTarget = targetText;
+            var targetCoords = targetText.split(",");
+            if (targetCoords.length > 1) {
+                targetRA = parseFloat(targetCoords[0]);
+                targetDEC = parseFloat(targetCoords[1]);
+                displayMarker("+", targetRA, targetDEC);
+            } else {
+                httpGet("lookup?o=" + targetText, processLookup);
+            }
+
+        }
+        function displayMarker(label, targetRA, targetDEC) {
+            var arrowElement = document.getElementById("arrow");
+            var camElement = document.getElementById("cam");
+            arrowElement.style.opacity = 1.0;
+            var deltaRA = targetRA - currentInfo.ra_center;
+            var deltaDEC = targetDEC - currentInfo.dec_center;
+            var rads =  currentInfo.orientation / 180.0 * Math.PI;
+            var pointRA = deltaRA * Math.cos(rads) - deltaDEC * Math.sin(rads);
+            var pointDEC = deltaRA * Math.sin(rads) + deltaDEC * Math.cos(rads);
+            var norm = Math.sqrt(pointRA * pointRA + pointDEC * pointDEC);
+            var scaledRA = pointRA / norm * camElement.height * 0.4;
+            var scaledDEC = pointDEC / norm * camElement.height * 0.4;
+            console.log("scaledRA " + scaledRA + " scaledDEC " + scaledDEC);
+            var rotation = (90 + 180 * Math.atan(scaledDEC / scaledRA) / Math.PI);
+            if (scaledRA < 0) {
+                rotation = rotation + 180;
+            }
+            arrowElement.style.top = ((camElement.height / 2 + scaledDEC)) + "px";
+            arrowElement.style.left = (camElement.width / 2 + scaledRA) + "px";
+            arrowElement.firstElementChild.setAttribute("transform",
+                    "rotate(" + rotation + " 20 20)");
+        }
+        function depositMarker(label, scaledRA, scaledDEC) {
+            var camElement = document.getElementById("cam");
+            var marker = document.createElement("div");
+            marker.innerHTML = label;
+            marker.style.top = ((camElement.height / 2 + scaledDEC)) + "px";
+            marker.style.left = (camElement.width / 2 + scaledRA) + "px";
+            marker.style.position = "absolute";
+            document.body.appendChild(marker);
         }
         function imageDispatch(event) {
             var solvedElement = document.getElementById("solvedfield");
@@ -271,6 +361,16 @@ package phdremote
                     (svgLeft(galIcon) - (camElement.width / 2)) - totalExtra;
 
         };
+        function httpGet(url, callback) {
+            var xhr = new XMLHttpRequest();
+            xhr.onreadystatechange = function() {
+                if ((xhr.readyState) == 4 && (xhr.status == 200)) {
+                   callback(xhr.responseText);
+                }
+            }
+            xhr.open("GET", url, true);
+            xhr.send();
+        }
         function svgTop(elm) {
             return parseFloat(elm.style.top);
         }
@@ -309,6 +409,9 @@ package phdremote
                 <circle cx="50%%" cy="50%%" r="4%%" stroke="red" stroke-width="1" fill="none" />
                 <circle cx="50%%" cy="50%%" r="2%%" stroke="red" stroke-width="1" fill="none" />
             </g>
+        </svg>
+        <svg id="arrow" width="40" height="40" style="opacity: 0; position: absolute; top: 0; left: 0;" >
+            <polygon points="20,0 25,20 22,20 23,40 17,40 18,20 15,20" stroke="red" stroke-width="1.0" fill="firebrick"/>
         </svg>
         <svg id="galIcon" width="40" height="40" style="opacity: 0; position: absolute; top: 0; left: 0;" >
             <circle cx="50%%" cy="50%%" r="48%%" stroke="red" stroke-width="1.0" fill="none"/>
@@ -353,6 +456,11 @@ package phdremote
         <a onclick="guide()">GUIDE</a>
         <a onclick="stop()">STOP</a>
         <a onclick="loop()">LOOP</a>
+      </div>
+    </div>
+    <div class="tcontrols" >
+      <div class="tcinner" >
+        <input onchange="findField(this.value);" >
       </div>
     </div>
     <div class="trcontrols" >
